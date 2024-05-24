@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from api.v1.views import app_views
-from flask import jsonify, abort
+from flask import jsonify, abort, request, make_response
 from models import storage
 from models.base_model import BaseModel
 from models.state import State
@@ -16,11 +16,11 @@ def all_states():
     return jsonify(lists)
 
 @app_views.route('/states/<id>', strict_slashes=False)
-def id_states(id):
+def id_state(id):
     """Retrieves a State object based on id"""
     try:
         result = BaseModel.to_dict(
-            storage.all(State)["State." + id]
+            storage.get(State, id)
         )
     except:
         abort(404)
@@ -30,9 +30,17 @@ def id_states(id):
 def delete_state(id):
     """Deletes a State object based on id"""
     try:
-        result = storage.all(State)["State." + id]
-        storage.delete(result)
+        storage.delete(storage.get(State, id))
         storage.reload()
     except:
         abort(404)
     return jsonify({})
+
+@app_views.route('/states/<id>', methods=['POST'])
+def post_state(id):
+    """Creates a new State"""
+    if not request.json:
+        abort(404)
+    if 'name' not in request.json:
+        abort(404)
+    return make_response(jsonify(), 201)
