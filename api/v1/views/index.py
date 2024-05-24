@@ -6,6 +6,7 @@ from models import storage
 
 @app_views.route('/status')
 def status():
+    """return the status of API"""
     return jsonify({"status": "ok"})
 
 @app_views.route('/stats')
@@ -14,6 +15,5 @@ def stats():
     result = {}
     for value in storage.all().values():
         result[value.__class__.__name__] = storage.count(value.__class__.__name__)
-
 
     return jsonify(result)
