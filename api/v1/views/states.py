@@ -31,16 +31,23 @@ def delete_state(id):
     """Deletes a State object based on id"""
     try:
         storage.delete(storage.get(State, id))
-        storage.reload()
+        storage.save()
     except:
         abort(404)
+
     return jsonify({})
 
-@app_views.route('/states/<id>', methods=['POST'])
-def post_state(id):
+@app_views.route('/states', methods=['POST'], strict_slashes=False)
+def post_state():
     """Creates a new State"""
-    if not request.json:
+    try:
+        if not request.json or 'name' not in request.json:
+            raise
+        new_obj = State(**request.json)
+        BaseModel.save(new_obj)
+
+        result = BaseModel.to_dict(storage.get(State, new_obj.id))
+    except:
         abort(404)
-    if 'name' not in request.json:
-        abort(404)
-    return make_response(jsonify(), 201)
+    
+    return make_response(jsonify(result), 201)
