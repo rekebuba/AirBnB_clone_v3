@@ -5,23 +5,9 @@ from flask import jsonify, abort, request, make_response
 from models import storage
 from models.base_model import BaseModel
 from models.amenity import Amenity
-from models.state import State
 import models
 from datetime import datetime
 
-@app_views.route('/states/<state_id>/amenities')
-def cityInState(state_id):
-    """Retrieves the list of all Amenity objects of a State"""
-    if not storage.get(State, state_id):
-        abort(404)
-    
-    lists = []
-    for value in storage.all(Amenity).values():
-        if value.state_id == state_id:
-            lists.append(BaseModel.to_dict(value))
-
-    return jsonify(lists)
-    
 
 @app_views.route('/amenities', strict_slashes=False)
 def all_amenities():
@@ -33,7 +19,7 @@ def all_amenities():
     return jsonify(lists)
 
 @app_views.route('/amenities/<amenity_id>')
-def id_city(amenity_id):
+def amenity_id(amenity_id):
     """Retrieves a Amenity object based on id"""
     try:
         result = BaseModel.to_dict(
@@ -44,7 +30,7 @@ def id_city(amenity_id):
     return jsonify(result)
 
 @app_views.route('/amenities/<amenity_id>', methods=['DELETE'])
-def delete_city(amenity_id):
+def delete_amenity(amenity_id):
     """Deletes a Amenity object based on id"""
     if models.storage_t == 'db':
         storage._DBStorage__session.query(Amenity).filter(Amenity.id == amenity_id).delete()
@@ -56,7 +42,7 @@ def delete_city(amenity_id):
     return make_response(jsonify({}), 200)
 
 @app_views.route('/amenities', methods=['POST'], strict_slashes=False)
-def post_city(amenity_id):
+def post_amenity():
     """Creates a new Amenity"""
     if not request.is_json:
         abort(400, description="Not a JSON")
@@ -71,7 +57,7 @@ def post_city(amenity_id):
     return make_response(jsonify(result), 201)
 
 @app_views.route('/amenities/<amenity_id>', methods=['PUT'])
-def put_city(amenity_id):
+def put_amenity(amenity_id):
     """Updates a Amenity object"""
     if not request.is_json:
         abort(400, description="Not a JSON")
