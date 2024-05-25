@@ -18,6 +18,13 @@ def error(error):
     """
     return make_response(jsonify({"error": "Not found"}), 404)
 
+@app.errorhandler(400)
+def error(error):
+    """
+    handler for 400 errors that returns a JSON-formatted 400 status code response
+    """
+    return make_response(jsonify({"error": error.description}), 400)
+
 @app.teardown_appcontext
 def tear_stortage(exception):
     storage.close()
