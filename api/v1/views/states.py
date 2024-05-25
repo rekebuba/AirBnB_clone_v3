@@ -64,7 +64,7 @@ def put_state(state_id):
     object = storage.get(State, state_id)
     if object is None:
         abort(404)
-    
+
     request.json['updated_at'] = datetime.utcnow()
     
     if models.storage_t == 'db':

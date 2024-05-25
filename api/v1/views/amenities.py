@@ -1,0 +1,95 @@
+#!/usr/bin/python3
+
+from api.v1.views import app_views
+from flask import jsonify, abort, request, make_response
+from models import storage
+from models.base_model import BaseModel
+from models.amenity import Amenity
+from models.state import State
+import models
+from datetime import datetime
+
+@app_views.route('/states/<state_id>/amenities')
+def cityInState(state_id):
+    """Retrieves the list of all Amenity objects of a State"""
+    if not storage.get(State, state_id):
+        abort(404)
+    
+    lists = []
+    for value in storage.all(Amenity).values():
+        if value.state_id == state_id:
+            lists.append(BaseModel.to_dict(value))
+
+    return jsonify(lists)
+    
+
+@app_views.route('/amenities', strict_slashes=False)
+def all_amenities():
+    """Retrieves the list of all Amenity objects"""
+    lists = []
+    for value in storage.all(Amenity).values():
+        lists.append(BaseModel.to_dict(value))
+
+    return jsonify(lists)
+
+@app_views.route('/amenities/<amenity_id>')
+def id_city(amenity_id):
+    """Retrieves a Amenity object based on id"""
+    try:
+        result = BaseModel.to_dict(
+            storage.get(Amenity, amenity_id)
+        )
+    except:
+        abort(404)
+    return jsonify(result)
+
+@app_views.route('/amenities/<amenity_id>', methods=['DELETE'])
+def delete_city(amenity_id):
+    """Deletes a Amenity object based on id"""
+    if models.storage_t == 'db':
+        storage._DBStorage__session.query(Amenity).filter(Amenity.id == amenity_id).delete()
+    else:
+        del storage._FileStorage__objects['Amenity' + '.' + amenity_id]
+
+    storage.save()
+
+    return make_response(jsonify({}), 200)
+
+@app_views.route('/amenities', methods=['POST'], strict_slashes=False)
+def post_city(amenity_id):
+    """Creates a new Amenity"""
+    if not request.is_json:
+        abort(400, description="Not a JSON")
+    elif 'name' not in request.json:
+        abort(400, description="Missing name")        
+
+    new_obj = Amenity(**request.json)
+    BaseModel.save(new_obj)
+    
+    result = BaseModel.to_dict(storage.get(Amenity, new_obj.id))
+    
+    return make_response(jsonify(result), 201)
+
+@app_views.route('/amenities/<amenity_id>', methods=['PUT'])
+def put_city(amenity_id):
+    """Updates a Amenity object"""
+    if not request.is_json:
+        abort(400, description="Not a JSON")
+    object = storage.get(Amenity, amenity_id)
+    if object is None:
+        abort(404)
+    
+    request.json['updated_at'] = datetime.utcnow()
+    
+    if models.storage_t == 'db':
+        storage._DBStorage__session.query(Amenity).filter(Amenity.id == amenity_id).update(request.json)
+    else:
+        result = storage._FileStorage__objects['Amenity' + '.' + amenity_id]
+        for key, value in request.json.items():
+            if hasattr(result, key) and key not in ['id', 'state_id' 'created_at']:
+                setattr(result, key, value)
+    
+    storage.save()
+    result = BaseModel.to_dict(storage.get(Amenity, amenity_id))
+
+    return make_response(jsonify(result), 200)
