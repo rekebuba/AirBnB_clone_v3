@@ -78,7 +78,7 @@ def put_state(state_id):
         result = storage._FileStorage__objects['State' + '.' + state_id]
         for key, value in request.json.items():
             if hasattr(result, key) and key not in [
-                'id', 'state_id' 'created_at', 'updated_at']:
+                    'id', 'state_id' 'created_at', 'updated_at']:
                 setattr(result, key, value)
 
     storage.save()

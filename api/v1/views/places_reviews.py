@@ -101,7 +101,8 @@ def put_review(review_id):
     else:
         result = storage._FileStorage__objects['Review' + '.' + review_id]
         for key, value in request.json.items():
-            if hasattr(result, key) and key not in ['id', 'user_id', 'place_id', 'created_at']:
+            if hasattr(result, key) and key not in [
+                    'id', 'user_id', 'place_id', 'created_at']:
                 setattr(result, key, value)
 
     storage.save()

@@ -99,7 +99,8 @@ def put_place(place_id):
     else:
         result = storage._FileStorage__objects['Place' + '.' + place_id]
         for key, value in request.json.items():
-            if hasattr(result, key) and key not in ['id', 'user_id', 'city_id' 'created_at']:
+            if hasattr(result, key) and key not in [
+                    'id', 'user_id', 'city_id' 'created_at']:
                 setattr(result, key, value)
 
     storage.save()

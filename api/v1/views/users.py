@@ -80,7 +80,8 @@ def put_user(user_id):
     else:
         result = storage._FileStorage__objects['User' + '.' + user_id]
         for key, value in request.json.items():
-            if hasattr(result, key) and key not in ['id', 'email', 'created_at']:
+            if hasattr(result, key) and key not in [
+                    'id', 'email', 'created_at']:
                 setattr(result, key, value)
 
     storage.save()
