@@ -59,7 +59,9 @@ def delete_place(place_id):
     return make_response(jsonify({}), 200)
 
 
-@app_views.route('/cities/<city_id>/places', methods=['POST'])
+@app_views.route(
+        '/cities/<city_id>/places', methods=['POST'], strict_slashes=False
+    )
 def post_place(city_id):
     """Creates a new Place"""
     if not storage.get(City, city_id):

@@ -26,14 +26,14 @@ def reviewInplace(place_id):
     return jsonify(lists)
 
 
-@app_views.route('/reviews', strict_slashes=False)
-def all_reviews():
-    """Retrieves the list of all Review objects"""
-    lists = []
-    for value in storage.all(Review).values():
-        lists.append(BaseModel.to_dict(value))
+# @app_views.route('/reviews', strict_slashes=False)
+# def all_reviews():
+#     """Retrieves the list of all Review objects"""
+#     lists = []
+#     for value in storage.all(Review).values():
+#         lists.append(BaseModel.to_dict(value))
 
-    return jsonify(lists)
+#     return jsonify(lists)
 
 
 @app_views.route('/reviews/<review_id>')
@@ -60,7 +60,9 @@ def delete_review(review_id):
     return make_response(jsonify({}), 200)
 
 
-@app_views.route('/places/<place_id>/reviews', methods=['POST'])
+@app_views.route(
+        '/places/<place_id>/reviews', methods=['POST'], strict_slashes=False
+    )
 def post_review(place_id):
     """Creates a new Review"""
     if not storage.get(Place, place_id):
