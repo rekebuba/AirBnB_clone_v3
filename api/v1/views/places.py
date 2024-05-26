@@ -68,6 +68,8 @@ def post_place(city_id):
         abort(404)
     elif not request.is_json:
         abort(400, description="Not a JSON")
+    elif 'user_id' not in request.json:
+        abort(400, description="Missing user_id")
     elif not storage.get(User, request.json['user_id']):
         abort(404)
     elif 'name' not in request.json:
