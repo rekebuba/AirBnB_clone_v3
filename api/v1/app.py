@@ -37,6 +37,6 @@ def tear_stortage(exception):
 
 if __name__ == '__main__':
     """ Main Function """
-    HBNB_API_HOST = getenv('HBNB_API_HOST')
-    HBNB_API_PORT = getenv('HBNB_API_PORT')
-    app.run(host=HBNB_API_HOST, port=HBNB_API_PORT, threaded=True)
+    HOST = getenv('HBNB_API_HOST') if getenv('HBNB_API_HOST') else '0.0.0.0'
+    PORT = getenv('HBNB_API_PORT') if getenv('HBNB_API_PORT') else '5000'
+    app.run(host=HOST, port=PORT, threaded=True, debug=True)
