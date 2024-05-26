@@ -18,29 +18,32 @@ def all_users():
 
     return jsonify(lists)
 
+
 @app_views.route('/users/<user_id>')
 def id_user(user_id):
     """Retrieves a User object based on id"""
-    try:
-        result = BaseModel.to_dict(
-            storage.get(User, user_id)
-        )
-    except:
+    object = storage.get(User, user_id)
+    if not object:
         abort(404)
+    result = BaseModel.to_dict(object)
+
     return jsonify(result)
+
 
 # TODO
 @app_views.route('/users/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
     """Deletes a User object based on id"""
     if models.storage_t == 'db':
-        storage._DBStorage__session.query(User).filter(User.id == user_id).delete()
+        storage._DBStorage__session.query(User).filter(
+            User.id == user_id).delete()
     else:
         del storage._FileStorage__objects['User' + '.' + user_id]
 
     storage.save()
 
     return make_response(jsonify({}), 200)
+
 
 @app_views.route('/users', methods=['POST'], strict_slashes=False)
 def post_user():
@@ -50,14 +53,15 @@ def post_user():
     elif 'email' not in request.json:
         abort(400, description="Missing email")
     elif 'password' not in request.json:
-        abort(400, description="Mising password")     
+        abort(400, description="Mising password")
 
     new_obj = User(**request.json)
     BaseModel.save(new_obj)
-    
+
     result = BaseModel.to_dict(storage.get(User, new_obj.id))
-    
+
     return make_response(jsonify(result), 201)
+
 
 @app_views.route('/users/<user_id>', methods=['PUT'])
 def put_user(user_id):
@@ -66,17 +70,18 @@ def put_user(user_id):
         abort(400, description="Not a JSON")
     if not storage.get(User, user_id):
         abort(404)
-    
+
     request.json['updated_at'] = datetime.utcnow()
-    
+
     if models.storage_t == 'db':
-        storage._DBStorage__session.query(User).filter(User.id == user_id).update(request.json)
+        storage._DBStorage__session.query(User).filter(
+            User.id == user_id).update(request.json)
     else:
         result = storage._FileStorage__objects['User' + '.' + user_id]
         for key, value in request.json.items():
             if hasattr(result, key) and key not in ['id', 'email', 'created_at']:
                 setattr(result, key, value)
-    
+
     storage.save()
     result = BaseModel.to_dict(storage.get(User, user_id))
 

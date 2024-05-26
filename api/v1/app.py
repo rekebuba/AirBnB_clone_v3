@@ -14,16 +14,20 @@ app.register_blueprint(app_views)
 @app.errorhandler(404)
 def error(error):
     """
-    handler for 404 errors that returns a JSON-formatted 404 status code response
+    handler for 404 errors that returns a JSON-formatted
+    404 status code response
     """
     return make_response(jsonify({"error": "Not found"}), 404)
+
 
 @app.errorhandler(400)
 def error(error):
     """
-    handler for 400 errors that returns a JSON-formatted 400 status code response
+    handler for 400 errors that returns a JSON-formatted
+    400 status code response
     """
     return make_response(jsonify({"error": error.description}), 400)
+
 
 @app.teardown_appcontext
 def tear_stortage(exception):
