@@ -1,12 +1,13 @@
 #!/usr/bin/python3
+"""State objects that handles all default RESTFul API actions:"""
 
-from datetime import datetime
-import models
 from api.v1.views import app_views
+from datetime import datetime
 from flask import jsonify, abort, request, make_response
 from models import storage
 from models.base_model import BaseModel
 from models.state import State
+import models
 
 
 @app_views.route('/states', strict_slashes=False)
