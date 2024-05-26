@@ -34,15 +34,11 @@ def id_state(state_id):
 @app_views.route('/states/<state_id>', methods=['DELETE'])
 def delete_state(state_id):
     """Deletes a State object based on id"""
-    if not storage.get(State, state_id):
+    state_to_delete = storage.get(State, state_id)
+    if not state_to_delete:
         abort(404)
 
-    if models.storage_t == 'db':
-        storage._DBStorage__session.query(State).filter(
-            State.id == state_id).delete()
-    else:
-        del storage._FileStorage__objects['State' + '.' + state_id]
-
+    storage.delete(state_to_delete)
     storage.save()
 
     return make_response(jsonify({}), 200)
