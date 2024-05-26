@@ -9,6 +9,7 @@ from models.amenity import Amenity
 import models
 from datetime import datetime
 
+
 @app_views.route('/amenities', strict_slashes=False)
 def all_amenities():
     """Retrieves the list of all Amenity objects"""
