@@ -50,12 +50,11 @@ def review_id(review_id):
 @app_views.route('/reviews/<review_id>', methods=['DELETE'])
 def delete_review(review_id):
     """Deletes a Review object based on id"""
-    if models.storage_t == 'db':
-        storage._DBStorage__session.query(Review).filter(
-            Review.id == review_id).delete()
-    else:
-        del storage._FileStorage__objects['Review' + '.' + review_id]
+    review_to_delete = storage.get(Review, review_id)
+    if not review_to_delete:
+        abort(404)
 
+    storage.delete(review_to_delete)
     storage.save()
 
     return make_response(jsonify({}), 200)

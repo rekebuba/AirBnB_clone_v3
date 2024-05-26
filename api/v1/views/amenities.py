@@ -31,16 +31,14 @@ def amenity_id(amenity_id):
     return jsonify(result)
 
 
-# TODO
 @app_views.route('/amenities/<amenity_id>', methods=['DELETE'])
 def delete_amenity(amenity_id):
     """Deletes a Amenity object based on id"""
-    if models.storage_t == 'db':
-        storage._DBStorage__session.query(Amenity).filter(
-            Amenity.id == amenity_id).delete()
-    else:
-        del storage._FileStorage__objects['Amenity' + '.' + amenity_id]
+    amenity_to_delete = storage.get(Amenity, amenity_id)
+    if not amenity_to_delete:
+        abort(404)
 
+    storage.delete(amenity_to_delete)
     storage.save()
 
     return make_response(jsonify({}), 200)

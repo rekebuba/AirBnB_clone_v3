@@ -46,16 +46,14 @@ def place_id(place_id):
     return jsonify(result)
 
 
-# TODO
 @app_views.route('/places/<place_id>', methods=['DELETE'])
 def delete_place(place_id):
     """Deletes a Place object based on id"""
-    if models.storage_t == 'db':
-        storage._DBStorage__session.query(Place).filter(
-            Place.id == place_id).delete()
-    else:
-        del storage._FileStorage__objects['Place' + '.' + place_id]
+    place_to_delete = storage.get(Place, place_id)
+    if not place_to_delete:
+        abort(404)
 
+    storage.delete(place_to_delete)
     storage.save()
 
     return make_response(jsonify({}), 200)

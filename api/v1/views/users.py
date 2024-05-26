@@ -35,12 +35,11 @@ def id_user(user_id):
 @app_views.route('/users/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
     """Deletes a User object based on id"""
-    if models.storage_t == 'db':
-        storage._DBStorage__session.query(User).filter(
-            User.id == user_id).delete()
-    else:
-        del storage._FileStorage__objects['User' + '.' + user_id]
+    user_to_delete = storage.get(User, user_id)
+    if not user_to_delete:
+        abort(404)
 
+    storage.delete(user_to_delete)
     storage.save()
 
     return make_response(jsonify({}), 200)
