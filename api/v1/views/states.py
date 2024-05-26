@@ -34,6 +34,9 @@ def id_state(state_id):
 @app_views.route('/states/<state_id>', methods=['DELETE'])
 def delete_state(state_id):
     """Deletes a State object based on id"""
+    if not storage.get(State, state_id):
+        abort(404)
+
     if models.storage_t == 'db':
         storage._DBStorage__session.query(State).filter(
             State.id == state_id).delete()
