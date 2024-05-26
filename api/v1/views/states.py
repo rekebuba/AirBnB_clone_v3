@@ -10,7 +10,7 @@ from models.state import State
 import models
 
 
-@app_views.route('/states', strict_slashes=False)
+@app_views.route('/states')
 def all_states():
     """Retrieves the list of all State objects"""
     lists = []
@@ -44,7 +44,7 @@ def delete_state(state_id):
     return make_response(jsonify({}), 200)
 
 
-@app_views.route('/states', methods=['POST'], strict_slashes=False)
+@app_views.route('/states', methods=['POST'])
 def post_state():
     """Creates a new State"""
     if not request.is_json:

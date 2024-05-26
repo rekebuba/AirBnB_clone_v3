@@ -25,15 +25,14 @@ def cityInState(state_id):
     return jsonify(lists)
 
 
-@app_views.route('/cities', strict_slashes=False)
-def all_cities():
-    """Retrieves the list of all City objects"""
-    lists = []
-    for value in storage.all(City).values():
-        lists.append(BaseModel.to_dict(value))
+# @app_views.route('/cities', strict_slashes=False)
+# def all_cities():
+#     """Retrieves the list of all City objects"""
+#     lists = []
+#     for value in storage.all(City).values():
+#         lists.append(BaseModel.to_dict(value))
 
-    return jsonify(lists)
-
+#     return jsonify(lists)
 
 @app_views.route('/cities/<city_id>')
 def id_city(city_id):
