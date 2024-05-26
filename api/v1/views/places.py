@@ -5,6 +5,7 @@ from flask import jsonify, abort, request, make_response
 from models import storage
 from models.base_model import BaseModel
 from models.city import City
+from models.user import User
 from models.place import Place
 import models
 from datetime import datetime
@@ -22,14 +23,14 @@ def placeInCity(city_id):
 
     return jsonify(lists)
 
-@app_views.route('/places', strict_slashes=False)
-def all_places():
-    """Retrieves the list of all Place objects"""
-    lists = []
-    for value in storage.all(Place).values():
-        lists.append(BaseModel.to_dict(value))
+# @app_views.route('/places', strict_slashes=False)
+# def all_places():
+#     """Retrieves the list of all Place objects"""
+#     lists = []
+#     for value in storage.all(Place).values():
+#         lists.append(BaseModel.to_dict(value))
 
-    return jsonify(lists)
+#     return jsonify(lists)
 
 @app_views.route('/places/<place_id>')
 def place_id(place_id):
@@ -42,9 +43,11 @@ def place_id(place_id):
         abort(404)
     return jsonify(result)
 
+# TODO
 @app_views.route('/places/<place_id>', methods=['DELETE'])
 def delete_place(place_id):
     """Deletes a Place object based on id"""
+    
     if models.storage_t == 'db':
         storage._DBStorage__session.query(Place).filter(Place.id == place_id).delete()
     else:
@@ -61,8 +64,11 @@ def post_place(city_id):
         abort(404)
     elif not request.is_json:
         abort(400, description="Not a JSON")
+    elif not storage.get(User, request.json['user_id']):
+        abort(404)
     elif 'name' not in request.json:
         abort(400, description="Missing name")        
+    
     request.json['city_id']  = city_id
     
     new_obj = Place(**request.json)
@@ -75,11 +81,10 @@ def post_place(city_id):
 @app_views.route('/places/<place_id>', methods=['PUT'])
 def put_place(place_id):
     """Updates a Place object"""
-    if not request.is_json:
-        abort(400, description="Not a JSON")
-    object = storage.get(Place, place_id)
-    if object is None:
+    if not storage.get(Place, place_id):
         abort(404)
+    elif not request.is_json:
+        abort(400, description="Not a JSON")
     
     request.json['updated_at'] = datetime.utcnow()
     
@@ -88,7 +93,7 @@ def put_place(place_id):
     else:
         result = storage._FileStorage__objects['Place' + '.' + place_id]
         for key, value in request.json.items():
-            if hasattr(result, key) and key not in ['id', 'city_id' 'created_at']:
+            if hasattr(result, key) and key not in ['id', 'user_id', 'city_id' 'created_at']:
                 setattr(result, key, value)
     
     storage.save()

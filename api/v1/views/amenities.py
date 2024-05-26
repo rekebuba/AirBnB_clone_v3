@@ -29,6 +29,7 @@ def amenity_id(amenity_id):
         abort(404)
     return jsonify(result)
 
+# TODO
 @app_views.route('/amenities/<amenity_id>', methods=['DELETE'])
 def delete_amenity(amenity_id):
     """Deletes a Amenity object based on id"""
@@ -61,8 +62,7 @@ def put_amenity(amenity_id):
     """Updates a Amenity object"""
     if not request.is_json:
         abort(400, description="Not a JSON")
-    object = storage.get(Amenity, amenity_id)
-    if object is None:
+    if not storage.get(Amenity, amenity_id):
         abort(404)
     
     request.json['updated_at'] = datetime.utcnow()
@@ -72,7 +72,7 @@ def put_amenity(amenity_id):
     else:
         result = storage._FileStorage__objects['Amenity' + '.' + amenity_id]
         for key, value in request.json.items():
-            if hasattr(result, key) and key not in ['id', 'state_id' 'created_at']:
+            if hasattr(result, key) and key not in ['id', 'created_at']:
                 setattr(result, key, value)
     
     storage.save()

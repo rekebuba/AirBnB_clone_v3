@@ -61,8 +61,7 @@ def put_state(state_id):
     """Updates a State object"""
     if not request.is_json:
         abort(400, description="Not a JSON")
-    object = storage.get(State, state_id)
-    if object is None:
+    if not storage.get(State, state_id):
         abort(404)
 
     request.json['updated_at'] = datetime.utcnow()

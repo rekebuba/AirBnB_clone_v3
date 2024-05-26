@@ -23,7 +23,6 @@ def cityInState(state_id):
     return jsonify(lists)
     
     
-
 @app_views.route('/cities', strict_slashes=False)
 def all_cities():
     """Retrieves the list of all City objects"""
@@ -44,6 +43,7 @@ def id_city(city_id):
         abort(404)
     return jsonify(result)
 
+# TODO
 @app_views.route('/cities/<city_id>', methods=['DELETE'])
 def delete_city(city_id):
     """Deletes a City object based on id"""
@@ -65,8 +65,9 @@ def post_city(state_id):
         abort(400, description="Not a JSON")
     elif 'name' not in request.json:
         abort(400, description="Missing name")        
-    request.json['state_id']  = state_id
     
+    request.json['state_id']  = state_id
+
     new_obj = City(**request.json)
     BaseModel.save(new_obj)
     

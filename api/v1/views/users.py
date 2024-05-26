@@ -29,6 +29,7 @@ def id_user(user_id):
         abort(404)
     return jsonify(result)
 
+# TODO
 @app_views.route('/users/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
     """Deletes a User object based on id"""
@@ -46,8 +47,8 @@ def post_user():
     """Creates a new User"""
     if not request.is_json:
         abort(400, description="Not a JSON")
-    elif 'name' not in request.json:
-        abort(400, description="Missing name")
+    elif 'email' not in request.json:
+        abort(400, description="Missing email")
     elif 'password' not in request.json:
         abort(400, description="Mising password")     
 
@@ -63,8 +64,7 @@ def put_user(user_id):
     """Updates a User object"""
     if not request.is_json:
         abort(400, description="Not a JSON")
-    object = storage.get(User, user_id)
-    if object is None:
+    if not storage.get(User, user_id):
         abort(404)
     
     request.json['updated_at'] = datetime.utcnow()
@@ -74,7 +74,7 @@ def put_user(user_id):
     else:
         result = storage._FileStorage__objects['User' + '.' + user_id]
         for key, value in request.json.items():
-            if hasattr(result, key) and key not in ['id', 'email', 'state_id' 'created_at']:
+            if hasattr(result, key) and key not in ['id', 'email', 'created_at']:
                 setattr(result, key, value)
     
     storage.save()
