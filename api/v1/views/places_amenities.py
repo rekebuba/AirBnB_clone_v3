@@ -15,6 +15,7 @@ from models.amenity import Amenity
 import models
 from datetime import datetime
 
+
 @app_views.route('/places/<place_id>/amenities')
 def amenityInPlace(place_id):
     """Retrieves the list of all Amenity objects of a Place"""
@@ -30,15 +31,16 @@ def amenityInPlace(place_id):
     return jsonify(result)
 
 
-@app_views.route('/places/<place_id>/amenities/<amenity_id>',  methods=['DELETE'])
+@app_views.route('/places/<place_id>/amenities/<amenity_id>',
+                 methods=['DELETE'])
 def deleteAmenity(place_id, amenity_id):
     """Deletes a Amenity object by a Place id"""
-    if not storage.get(Place, place_id) or not storage.get(Amenity, amenity_id):
+    if not storage.get(Place, place_id) or not storage.get(
+                                                        Amenity, amenity_id):
         abort(404)
 
     place = storage.get(Place, place_id)
 
-    result = []
     for amenity in place.amenities:
         if amenity.id == amenity_id:
             storage.delete(amenity)
@@ -47,15 +49,16 @@ def deleteAmenity(place_id, amenity_id):
 
     return make_response(jsonify({}), 200)
 
-@app_views.route('/places/<place_id>/amenities/<amenity_id>',  methods=['POST'])
+
+@app_views.route('/places/<place_id>/amenities/<amenity_id>', methods=['POST'])
 def linkAmenity(place_id, amenity_id):
     """Link a Amenity object to a Place"""
-    if not storage.get(Place, place_id) or not storage.get(Amenity, amenity_id):
+    if not storage.get(Place, place_id) or not storage.get(
+                                                        Amenity, amenity_id):
         abort(404)
 
     place = storage.get(Place, place_id)
 
-    result = []
     for amenity in place.amenities:
         if amenity.id == amenity_id:
             storage.delete(amenity)
